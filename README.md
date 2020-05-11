@@ -10,10 +10,11 @@ After you are installed the plugin, choose the ”Static Search” option from t
 
 To insert the search box and the search results into the site, use the [static_search] shortcode. It’s a good practice to create a page called ”Search” with the slug ”/search/” and insert the [static_search] shortcode into this page. To redirect the search widgets to this page, append the following code to the bottom of your .htaccess file:
 
-```
-RewriteCond %{QUERY_STRING} \\?s=([^&]+) [NC]
-RewriteRule ^$ /search/?q=%1 [NC,R,END]
-```
+`RewriteCond %{QUERY_STRING} \\?s=([^&]+) [NC]`
+
+`RewriteRule ^$ /search/?q=%1 [NC,R,END]`
+
+
 This code redirects the search queries to the /search/ page, then the [static_search] shortcode processes them and shows the search results.
 
 ## Built With
