@@ -49,7 +49,7 @@ function loadScripts(urls, callback) {
 
 function onJSONLoaded() {
     data = JSON.parse(this.responseText);
-    var scriptsToLoad = ['../3rdparty-css-js/lunr-2.3.8.js'];
+    var scriptsToLoad = ['../3rdparty-css-js/lunr-2.3.8.min.js'];
     // if (data.config && data.config.lang && data.config.lang.length) {
     //     lang = data.config.lang;
     // }

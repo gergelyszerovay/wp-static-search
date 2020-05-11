@@ -3,7 +3,7 @@
  * Plugin Name: WP Static Search
  * Plugin URI: https://github.com/gergelyszerovay/wp-static-search
  * Description: Static search plugin for Wordpress static websites
- * Version: 1.0
+ * Version: 1.0.2
  * Requires at least: 5.2
  * Requires PHP: 7.2
  * Author: Gergely Szerovay

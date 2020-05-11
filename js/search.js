@@ -101,7 +101,7 @@ function onWorkerMessage(e) {
 if (!window.Worker) {
     console.log('Web Worker API not supported');
     // load index in main thread
-    affixScriptToHead(appStaticSearch.siteUrl + "/wp-content/plugins/static-search/js/worker.js?ver=0.0.1").done(function () {
+    affixScriptToHead(appStaticSearch.siteUrl + "/wp-content/plugins/wp-static-search/js/worker.js?ver=0.0.1").done(function () {
         console.log('Loaded worker');
         init(appStaticSearch.indexVersion);
         window.postMessage = function (msg) {
