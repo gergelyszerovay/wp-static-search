@@ -3,7 +3,7 @@
  * Plugin Name: WP Static Search
  * Plugin URI: https://github.com/gergelyszerovay/wp-static-search
  * Description: Static search plugin for Wordpress static websites
- * Version: 1.0.2
+ * Version: 1.1.0
  * Requires at least: 5.2
  * Requires PHP: 7.2
  * Author: Gergely Szerovay
@@ -26,15 +26,56 @@ function ss_head() {
         $version = file_get_contents($dir . '/lunr-index.ver');
     }
 
-    $output = <<< ENDH
+	if(is_front_page()||is_search())
+	{
+    	$output = <<< ENDH
 <script>
+/* Redirect searches from home page */		 
+var urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('s'))
+{
+/* Check for server host - insert index page if it doesn't exist   */
+    if ((typeof window.location.hostname !== 'undefined') && (window.location.hostname!==''))
+	{
+		var fileSuffix='';
+	}
+	else
+	{
+		var fileSuffix='index.html';    /* for offline reading  */
+	}
+    var searchQuery= urlParams.get('s');
+	window.location.replace("search/" + fileSuffix + "?q="+searchQuery);
+}
+</script>
+
+ENDH;
+	}
+
+	else if(strpos(get_the_title(),'search')===true)
+	{
+    	$output = <<< ENDH
+<script>
+/* Check for server host - insert index page if it doesn't exist   */
+if ((typeof window.location.hostname !== 'undefined') && (window.location.hostname!==''))
+{
+	var hostName=window.location.hostname;
+	var hostProtocol=window.location.protocol;
+	var siteUrl=hostProtocol + hostName;
+}
+else
+{
+    var siteUrl='';	   /* for offline reading */
+}
+
+/* pass site URL variable in object literal */
 appStaticSearch = {
-    siteUrl: "{$siteUrl}",
+    siteUrl:[siteUrl],
     maxSearchResults: 50,
     indexVersion: {$version}
 };
 </script>
 ENDH;
+	}
     echo $output;
 }
 
@@ -135,7 +176,7 @@ function ss_rest_handler(\WP_REST_Request $request) {
             }
             file_put_contents($dir . '/lunr-index.ver', $version + 1);
 
-            file_put_contents($dir . '/lunr-index.json', $params['serializedIdx']);
+            file_put_contents($dir . '/lunr-index.js', $params['serializedIdx']);
 
             echo '{"status": "done", "action": "' . $params['_wp_rest_action'] . '"}';
             break;
