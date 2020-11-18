@@ -1,7 +1,9 @@
 // based on mkdocs: https://github.com/mkdocs/mkdocs/blob/afa18ae2c0f2bbfc8c8a021c4e9042526fa783f3/mkdocs/contrib/search/templates/search/worker.js , 2505a90
 // mkdocs has 2 clause BSD License, Copyright © 2014, Tom Christie. All rights reserved.
 // Modificaions made by Gergely Szerovay, licensed under the Apache 2 or GPL 2+ license
+// File contents commented out by Paul Trafford following changes to search.js
 
+/*
 var base_path = 'function' === typeof importScripts ? '.' : '../../lunr-index/';
 var allowSearch = false;
 var index;
@@ -148,3 +150,4 @@ if ('function' === typeof importScripts) {
         }
     };
 }
+*/
