@@ -156,7 +156,7 @@ function lunrIndex(updateIndexData) {
     });
 
     var data = {'index': idx, 'documents': updateIndexData.documents};
-    storeIndex(JSON.stringify(data));
+    storeIndex('var data = '+JSON.stringify(data)+';');
 
     document.getElementById("button_ss_update_index").disabled = false;
 
