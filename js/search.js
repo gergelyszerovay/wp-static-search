@@ -1,10 +1,18 @@
 // based on mkdocs: https://github.com/mkdocs/mkdocs/blob/master/mkdocs/contrib/search/templates/search/main.js , 2505a90
 // mkdocs has 2 clause BSD License, Copyright © 2014, Tom Christie. All rights reserved.
-// Modificaions made by Gergely Szerovay, licensed under the Apache 2 or GPL 2+ license
+// Modifications made by Gergely Szerovay and Paul Trafford, licensed under the Apache 2 or GPL 2+ license
 
-
+/*
 var searchWorker;
 var min_search_length = 3;
+*/
+
+console.log('Starting static search...');
+doSearch();
+
+function loadError(oError) {
+  throw new URIError("The script " + oError.target.src + " didn't load correctly.");
+}
 
 function affixScriptToHead(url, onloadFunction) {
     var newScript = document.createElement("script");
@@ -16,6 +24,7 @@ function affixScriptToHead(url, onloadFunction) {
     newScript.src = url;
 }
 
+/*
 function getSearchTermFromLocation() {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
@@ -26,17 +35,18 @@ function getSearchTermFromLocation() {
         }
     }
 }
+*/
 
 function formatResult(result) {
      html = '' +
     '<div class="ss-article">' +
-    '<a href="'+appStaticSearch.siteUrl + result.loaction + '" class="ss-image-link">';
+    '<a href="..'+ result.location + result_suffix + '" class="ss-image-link">';
      if (result.featuredMedia != '') {
-         html += '<img src="'+appStaticSearch.siteUrl + result.featuredMedia + '" class="ss-image">';
+         html += '<img src="' + result.featuredMedia + '" class="ss-image">';
      }
     html += '</a>'+
     '<div class="ss-text">'+
-    '<h3><a href="' + appStaticSearch.siteUrl + location + '">' + result.title + '</a></h3>'+
+    '<h3><a href="..' + result.location + result_suffix + '">' + result.title + '</a></h3>'+
     '<p>' + result.summary + '</p>'+
     '</div>'+ // .ss-text
     '</div>'; // .ss-article
@@ -61,20 +71,78 @@ function displayResults(results) {
     }
 }
 
-function doSearch() {
-    var query = document.getElementById('ss-search-query').value;
-    if (query.length > min_search_length) {
-        if (!window.Worker) {
-            displayResults(search(query));
-        } else {
-            searchWorker.postMessage({query: query});
-        }
-    } else {
-        // Clear results for short queries
-        displayResults([]);
+function search(query) {
+    if (!allowSearch) {
+        console.error('Assets for search still loading');
+        return;
     }
+    var resultDocuments = [];
+    var results = index.search(query);
+    for (var i = 0; i < results.length; i++) {
+        var result = results[i];
+        var doc = documents[result.ref];
+        doc.summary = doc.text.substring(0, 200);
+        var n=doc.summary.split(" ");
+        n.pop();
+        doc.summary = n.join(' ') + ' ...';
+        doc.location = result.ref;
+        resultDocuments.push(doc);
+    }
+    return resultDocuments;
 }
 
+function doSearch() {
+    affixScriptToHead("../wp-content/lunr-index/lunr-index.js");
+     affixScriptToHead("../wp-content/plugins/wp-static-search/3rdparty-css-js/lunr-2.3.8.min.js");
+    
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('q'))
+	{
+	  	query=urlParams.get('q');
+	  	document.getElementById('ss-search-query').value=query;
+  		allowSearch = true;
+		if( document.readyState !== 'loading' ) {
+    		console.log( 'document is already ready for the search' );
+    		searchAndDisplay();
+		} else {
+    		window.addEventListener('load', function () {
+        		console.log( 'document is now ready for the search' );
+        		searchAndDisplay();
+    		});
+		}
+	}
+    
+    var staticSearchQuery = document.getElementById('ss-search-query');    
+    staticSearchQuery.addEventListener("keyup", function(event) {
+  	{
+    	event.preventDefault();
+    	query=staticSearchQuery.value;
+		allowSearch = true;
+    	searchAndDisplay();
+  	}
+  });
+}
+
+function searchAndDisplay(){
+	onScriptsLoaded();
+    if ((typeof window.location.hostname !== 'undefined') && (window.location.hostname!==''))
+	{
+		result_suffix='';
+	}
+	else
+	{
+   		result_suffix='index.html';
+	}
+	displayResults(search(query));
+}
+
+function onScriptsLoaded() {
+    index = lunr.Index.load(data['index']);
+    documents = data['documents'];
+    console.log('Lunr pre-built index loaded, search ready');
+}
+
+/*
 function initSearch() {
     var search_input = document.getElementById('ss-search-query');
     if (search_input) {
@@ -116,3 +184,5 @@ if (!window.Worker) {
     searchWorker.postMessage({init: {version: appStaticSearch.indexVersion}});
     searchWorker.onmessage = onWorkerMessage;
 }
+
+*/
