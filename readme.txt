@@ -31,6 +31,19 @@ To insert the search box and the search results into the site, use the [static_s
 
 This code redirects the search queries to the /search/ page, then the [static_search] shortcode processes them and shows the search results.
 
+## Files to include for static site generation
+
+When creating the static site, please make sure that files in the following directories are included (full paths may be needed):
+
+`/wp-content/lunr-index/`
+`/wp-content/plugins/wp-static-search/3rdparty-css-js/`
+`/wp-content/plugins/wp-static-search/css/`
+`/wp-content/plugins/wp-static-search/js/`
+
+In particular, the search index file, which might not be picked up by crawlers:
+
+`/wp-content/lunr-index/lunr-index.js`
+
 ## Built With
 
 [lunar.js](https://lunrjs.com/) - Javascript search engine
